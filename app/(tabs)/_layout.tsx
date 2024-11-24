@@ -15,7 +15,7 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: Colors[colorScheme ?? "light"].background, // Color de fondo para la barra de pestañas
           borderTopWidth: 1,
-          borderTopColor: "#ddd", // Borde superior de la barra de pestañas
+          borderColor: "#ddd", // Borde superior de la barra de pestañas
           height: 80,
           paddingBottom: 10,
           paddingTop: 5,

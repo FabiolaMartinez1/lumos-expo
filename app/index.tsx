@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: width * 0.08,
     },
     logo: {
-        width: 170,
+        width: 220,
         height: 170,
         marginBottom: height * 0.03,
     },
