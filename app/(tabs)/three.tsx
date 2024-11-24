@@ -1,8 +1,13 @@
 import React from 'react';
 import { View, Dimensions, StyleSheet } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
+import { useColorScheme } from '@/components/useColorScheme';
+import Colors from "@/constants/Colors";
 
 const App = () => {
+
+  const colorScheme = useColorScheme();
+  
   const data = {
     labels: ['January', 'February', 'March', 'April', 'May', 'June'],
     datasets: [
@@ -22,7 +27,7 @@ const App = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Colors[colorScheme ?? "light"].background }]}>
       <LineChart
         data={data}
         width={Dimensions.get('window').width - 16} // Adjusted for padding
@@ -41,10 +46,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 8,
-    backgroundColor: '#F5FCFF',
+    // backgroundColor: '#F5FCFF',
   },
   chart: {
     borderRadius: 16,
+    borderColor: "#fff",
+    borderWidth: 1
   },
 });
 
