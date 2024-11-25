@@ -9,6 +9,7 @@ export default function LoginScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleLoginPress = async () => {
         setLoading(true);
@@ -56,14 +57,29 @@ export default function LoginScreen() {
                     keyboardType="email-address"
                     autoCapitalize="none"
                 />
-                <TextInput
-                    style={styles.input}
-                    label="Contraseña"
-                    value={password}
-                    onChangeText={setPassword}
-                    theme={{ colors: { primary: "#2196F3" } }}
-                    secureTextEntry
-                />
+                <View style={styles.passwordContainer}>
+                    <TextInput
+                        style={styles.passwordInput}
+                        label="Contraseña"
+                        value={password}
+                        onChangeText={setPassword}
+                        theme={{ colors: { primary: "#2196F3" } }}
+                        // secureTextEntry
+                        secureTextEntry={!showPassword} // Controla si la contraseña es visible o no
+                    />
+
+                    <TouchableOpacity
+                            style={styles.eyeIcon}
+                            onPress={() => setShowPassword(!showPassword)}
+                        >
+                            <Ionicons
+                                name={showPassword ? "eye-off" : "eye"}
+                                size={24}
+                                color="#2196F3"
+                            />
+                    </TouchableOpacity>
+                </View>
+
                 <TouchableOpacity onPress={handleLoginPress} style={styles.loginButton}>
                     <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
                 </TouchableOpacity>
@@ -123,5 +139,25 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontSize: width * 0.045,
         fontWeight: "bold",
+    },
+    passwordContainer: {
+        width: "100%",
+        flexDirection: "row",
+        alignItems: "center",
+        borderColor: "#43CBF9",
+        borderWidth: 1,
+        borderRadius: 10,
+        marginBottom: height * 0.02,
+        backgroundColor: "#fff",
+    },
+    passwordInput: {
+        flex: 1,
+        height: height * 0.08,
+        paddingHorizontal: width * 0.04,
+        fontSize: width * 0.04,
+        backgroundColor: "#fff",
+    },
+    eyeIcon: {
+        paddingHorizontal: 10,
     },
 });
