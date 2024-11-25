@@ -26,3 +26,9 @@ export const fetchEnergyConsumptionError = async (user_id?: number) => {
     if (!response.ok) throw new Error("Error fetching energy consumption error");
     return await response.json();
 };
+
+export const fetchEnvironmentalData = async (user_id = 1) => {
+    const response = await fetch(`http://${BACKEND_DOMAIN}/api/environmental-data/last/${user_id}`);
+    if (!response.ok) throw new Error("Error fetching environmental data");
+    return await response.json();
+  };

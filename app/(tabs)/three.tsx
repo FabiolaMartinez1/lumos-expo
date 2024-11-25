@@ -32,6 +32,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(false);
         const [
           lightIntensity,
           energyConsumption,
@@ -93,7 +94,7 @@ export default function Dashboard() {
           ],
         });
 
-        setLoading(false);
+        
       } catch (error) {
         console.error("Error fetching data:", error);
         setLoading(false);
@@ -101,6 +102,14 @@ export default function Dashboard() {
     };
 
     fetchData();
+
+    // Configurar el polling cada 3 segundos
+    const intervalId = setInterval(() => {
+      fetchData(); // Vuelve a llamar a la API cada 3 segundos
+    }, 3000);
+
+    // Limpiar el intervalo cuando el componente se desmonte
+    return () => clearInterval(intervalId);
   }, []);
 
   const chartConfig = {
