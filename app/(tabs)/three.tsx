@@ -29,7 +29,6 @@ export default function Dashboard() {
   const [energyConsumptionErrorData, setEnergyConsumptionErrorData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
     const fetchData = async () => {
       try {
         const [
@@ -100,15 +99,24 @@ export default function Dashboard() {
       }
     };
 
-    fetchData();
-    // // Configurar el polling cada 3 segundos
-    // const intervalId = setInterval(() => {
-    //   fetchData(); // Vuelve a llamar a la API cada 3 segundos
-    // }, 3000);
+    // fetchData();
 
-    // // Limpiar el intervalo cuando el componente se desmonte
-    // return () => clearInterval(intervalId);
+  useEffect(() => {
+    // Primera carga
+    const initializeData = async () => {
+      await fetchData();
+      setLoading(false);
+
+      // Polling cada 5 segundos
+      const intervalId = setInterval(fetchData, 5000);
+
+      // Limpiar el intervalo al desmontar el componente
+      return () => clearInterval(intervalId);
+    };
+
+    initializeData();
   }, []);
+
 
   const chartConfig = {
     backgroundGradientFrom: "#000",
