@@ -50,6 +50,33 @@ app.get("/api/energy-consumption", (req, res) => {
     });
 });
 
+// Ruta para obtener el último dato de EnvironmentalData dado un user_id
+app.get("/api/environmental-data/last/:user_id", (req, res) => {
+    const userId = req.params.user_id;  // Obtener el user_id de los parámetros de la URL
+    const query = `
+        SELECT * FROM EnvironmentalData
+        WHERE user_id = ?
+        ORDER BY timestamp_data DESC
+        LIMIT 1
+    `;
+
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            console.error("Error al obtener datos de EnvironmentalData:", err);
+            res.status(500).send("Error al obtener datos");
+            return;
+        }
+        
+        // Verificar si se encontraron resultados
+        if (results.length === 0) {
+            return res.status(404).send("No se encontraron datos para el usuario con ID " + userId);
+        }
+
+        res.json(results[0]);  // Enviar el último registro encontrado
+    });
+});
+
+
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
