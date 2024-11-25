@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, Dimensions, StyleSheet } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
+import {
+  fetchLightIntensity,
+  fetchEnergyConsumption,
+  fetchAverageLightIntensity,
+  fetchEnergyConsumptionError,
+} from "@/service/apiService";
 
 // Interfaz para los elementos de la leyenda
 interface LegendItem {
@@ -14,29 +20,88 @@ export default function Dashboard() {
   const colorScheme = useColorScheme();
   const chartWidth = Dimensions.get("window").width - 16; // Ancho ajustado
   const chartHeight = 220; // Altura ajustada
+  // Constante para user_id
+  const userId = 1; // Reemplaza con el user_id necesario
 
-  const data1 = {
-    labels: ["0", "20", "40", "60", "80", "100"],
-    datasets: [{ data: [0.5e19, 1e19, 1.5e19, 2e19, 2.5e19, 3e19], strokeWidth: 2, color: () => "purple" }],
-  };
+  const [lightIntensityData, setLightIntensityData] = useState<any>(null);
+  const [energyConsumptionData, setEnergyConsumptionData] = useState<any>(null);
+  const [averageLightIntensityData, setAverageLightIntensityData] = useState<any>(null);
+  const [energyConsumptionErrorData, setEnergyConsumptionErrorData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const data2 = {
-    labels: ["0", "20", "40", "60", "80", "100"],
-    datasets: [
-      { data: [1, -0.5, 0.5, -1, 1.5, -1], strokeWidth: 2, color: () => "lime" },
-      { data: [0.5, 1, -1.5, 0.5, -0.5, 0.5], strokeWidth: 2, color: () => "magenta" },
-    ],
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [
+          lightIntensity,
+          energyConsumption,
+          averageLightIntensity,
+          energyConsumptionError,
+        ] = await Promise.all([
+          fetchLightIntensity(userId),
+          fetchEnergyConsumption(userId),
+          fetchAverageLightIntensity(userId),
+          fetchEnergyConsumptionError(userId),
+        ]);
 
-  const data3 = {
-    labels: ["0", "5", "10", "15", "20"],
-    datasets: [{ data: [1e18, 2e18, 3e18, 4e18, 5e18], strokeWidth: 2, color: () => "cyan" }],
-  };
+        setLightIntensityData({
+          labels: lightIntensity.map((item: any) => item.intensity_id.toString()),
+          datasets: [
+            {
+              data: lightIntensity.map((item: any) => item.intensity_level),
+              strokeWidth: 2,
+              color: () => "purple",
+            },
+          ],
+        });
 
-  const data4 = {
-    labels: ["0", "20", "40", "60", "80", "100"],
-    datasets: [{ data: [0.1, 0.5, -0.2, -0.4, 0.3, 0.5], strokeWidth: 2, color: () => "yellow" }],
-  };
+        setEnergyConsumptionData({
+          labels: energyConsumption.map((item: any) => item.usage_term.toString()),
+          datasets: [
+            {
+              data: energyConsumption.map((item: any) => item.estimated_consumption),
+              strokeWidth: 2,
+              color: () => "lime",
+            },
+            {
+              data: energyConsumption.map((item: any) => item.actual_consumption),
+              strokeWidth: 2,
+              color: () => "magenta",
+            },
+          ],
+        });
+
+        setAverageLightIntensityData({
+          labels: averageLightIntensity.map((item: any) => item.interval.toString()),
+          datasets: [
+            {
+              data: averageLightIntensity.map((item: any) => item.average),
+              strokeWidth: 2,
+              color: () => "cyan",
+            },
+          ],
+        });
+
+        setEnergyConsumptionErrorData({
+          labels: energyConsumptionError.map((item: any) => item.usage_term.toString()),
+          datasets: [
+            {
+              data: energyConsumptionError.map((item: any) => item.error),
+              strokeWidth: 2,
+              color: () => "yellow",
+            },
+          ],
+        });
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const chartConfig = {
     backgroundGradientFrom: "#000",
@@ -51,7 +116,6 @@ export default function Dashboard() {
     },
   };
 
-  // Componente de leyenda
   const Legend = ({ items }: { items: LegendItem[] }) => (
     <View style={styles.legendContainer}>
       {items.map((item, index) => (
@@ -63,16 +127,24 @@ export default function Dashboard() {
     </View>
   );
 
+  if (loading) {
+    return (
+      <View style={[styles.scrollContainer, { backgroundColor: Colors[colorScheme ?? "light"].background }]}>
+        <Text style={{ color: "#fff", textAlign: "center", marginTop: 50 }}>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={[styles.scrollContainer, { backgroundColor: Colors[colorScheme ?? "light"].background }]}>
-      {/* Cabecera con título */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Lumos IOT - Dashboard</Text>
       </View>
+
       <View style={styles.chartContainer}>
         <Text style={styles.title}>Light Intensity</Text>
         <LineChart
-          data={data1}
+          data={lightIntensityData}
           width={chartWidth}
           height={chartHeight}
           chartConfig={chartConfig}
@@ -82,10 +154,11 @@ export default function Dashboard() {
         />
         <Legend items={[{ color: "purple", label: "Light Intensity" }]} />
       </View>
+
       <View style={styles.chartContainer}>
         <Text style={styles.title}>Energy Consumption</Text>
         <LineChart
-          data={data2}
+          data={energyConsumptionData}
           width={chartWidth}
           height={chartHeight}
           chartConfig={chartConfig}
@@ -99,10 +172,11 @@ export default function Dashboard() {
           ]}
         />
       </View>
+
       <View style={styles.chartContainer}>
         <Text style={styles.title}>Average Light Intensity per Interval</Text>
         <LineChart
-          data={data3}
+          data={averageLightIntensityData}
           width={chartWidth}
           height={chartHeight}
           chartConfig={chartConfig}
@@ -112,10 +186,11 @@ export default function Dashboard() {
         />
         <Legend items={[{ color: "cyan", label: "Average Intensity" }]} />
       </View>
+
       <View style={styles.chartContainer}>
         <Text style={styles.title}>Error - Energy Consumption</Text>
         <LineChart
-          data={data4}
+          data={energyConsumptionErrorData}
           width={chartWidth}
           height={chartHeight}
           chartConfig={chartConfig}
@@ -132,7 +207,7 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
-    backgroundColor: "#000", // Fondo negro
+    backgroundColor: "#000",
   },
   header: {
     padding: 16,
@@ -146,7 +221,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   chartContainer: {
-    marginBottom: 20, // Espacio entre gráficos
+    marginBottom: 20,
     paddingHorizontal: 8,
     padding: 8,
   },
