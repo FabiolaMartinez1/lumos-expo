@@ -60,6 +60,20 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="four"
+        options={{
+          title: "",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "cloud" : "cloud-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+
     </Tabs>
   );
 }
