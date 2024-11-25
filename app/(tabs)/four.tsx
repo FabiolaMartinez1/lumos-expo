@@ -3,32 +3,45 @@ import { StyleSheet, View, Text } from "react-native";
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
 
+import { fetchEnvironmentalData } from "@/service/apiService";
+
 export default function TabOneScreen() {
   const colorScheme = useColorScheme();
 
   // Estados simulados para datos
 
   // Estados para los datos obtenidos de la API
-  const [temperature, setTemperature] = useState(null);
-  const [humidity, setHumidity] = useState(null);
-  const [timestamp, setTimestamp] = useState(null);
-  const getEnvironmentalData = async () => {
-    try {
-      const userId = 1; // Aquí pones el user_id correspondiente
-      const response = await axios.get(`http://localhost:3000/api/environmental-data/last/${userId}`);
-      const data = response.data;
-
-      // Actualizar los estados con los datsos obtenidos
-      setTemperature(data.temperature_celsius);
-      setHumidity(data.humidity_percentage);
-      setTimestamp(data.timestamp_data);
-    } catch (error) {
-      console.error("Error al obtener los datos ambientales:", error);
-    }
-  };  
+  const [temperature, setTemperature] = useState(24.5);
+  const [humidity, setHumidity] = useState(55.3);
+  const [timestamp, setTimestamp] = useState("2024-11-24 14:35:00");
+  
   useEffect(() => {
+    const getEnvironmentalData = async () => {
+      try {
+        const data = await fetchEnvironmentalData(1); // Llamamos con el user_id 1
+        // Actualizamos los estados con los datos obtenidos
+        setTemperature(data.temperature_celsius);
+        setHumidity(data.humidity_percentage);
+        setTimestamp(data.timestamp_data);
+      } catch (error) {
+        console.error("Error al obtener los datos ambientales:", error);
+      }
+    };
+
+    // Ejecutamos la función una vez al cargar el componente
     getEnvironmentalData();
-  }, []);
+
+    // Configuramos el polling cada 3 segundos
+    const intervalId = setInterval(() => {
+      getEnvironmentalData(); // Vuelve a llamar a la API cada 3 segundos
+    }, 3000);
+
+    // Limpiar el intervalo cuando el componente se desmonte
+    return () => clearInterval(intervalId);
+  }, []); // El array vacío [] asegura que se ejecute solo al montar el componente
+
+
+
 
   return (
     <View style={[styles.container, { backgroundColor: Colors[colorScheme ?? "light"].background }]}>
