@@ -1,0 +1,21 @@
+### Test Light Intensity Endpoint
+GET http://192.168.31.190:5000/light-intensity?user_id=1
+Accept: application/json
+
+###
+
+### Test Energy Consumption Endpoint
+GET http://192.168.31.190:5000/energy-consumption?user_id=1
+Accept: application/json
+
+###
+
+### Test Average Light Intensity Endpoint
+GET http://192.168.31.190:5000/average-light-intensity?user_id=1
+Accept: application/json
+
+###
+
+### Test Energy Consumption Error Endpoint
+GET http://192.168.31.190:5000/energy-consumption-error?user_id=1
+Accept: application/json
