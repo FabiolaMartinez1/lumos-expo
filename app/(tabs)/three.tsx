@@ -159,7 +159,13 @@ export default function Dashboard() {
       <View style={styles.chartContainer}>
         <Text style={styles.title}>Light Intensity</Text>
         <LineChart
-          data={lightIntensityData}
+          // data={lightIntensityData}
+          data={{
+            ...lightIntensityData,
+            labels: lightIntensityData?.labels.map((label: string, index: number) =>
+              index % 5 === 0 ? label : ""
+            ),
+          }}
           width={chartWidth}
           height={chartHeight}
           chartConfig={chartConfig}
@@ -173,7 +179,13 @@ export default function Dashboard() {
       <View style={styles.chartContainer}>
         <Text style={styles.title}>Energy Consumption</Text>
         <LineChart
-          data={energyConsumptionData}
+          // data={energyConsumptionData}
+          data={{
+            ...energyConsumptionData,
+            labels: energyConsumptionData?.labels.map((label: string, index: number) =>
+              index % 5 === 0 ? label : ""
+            ),
+          }}
           width={chartWidth}
           height={chartHeight}
           chartConfig={chartConfig}
@@ -205,7 +217,13 @@ export default function Dashboard() {
       <View style={styles.chartContainer}>
         <Text style={styles.title}>Error - Energy Consumption</Text>
         <LineChart
-          data={energyConsumptionErrorData}
+          // data={energyConsumptionErrorData}
+          data={{
+            ...energyConsumptionErrorData,
+            labels: energyConsumptionErrorData?.labels.map((label: string, index: number) =>
+              index % 5 === 0 ? label : ""
+            ),
+          }}
           width={chartWidth}
           height={chartHeight}
           chartConfig={chartConfig}
