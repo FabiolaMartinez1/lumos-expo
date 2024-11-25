@@ -1,19 +1,40 @@
 import React, { useState } from "react";
-import { KeyboardAvoidingView, Platform, View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from "react-native";
+import { KeyboardAvoidingView, Platform, View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, Alert } from "react-native";
 import { TextInput } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { login } from "@/service/apiService";
 
 export default function LoginScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleLoginPress = () => {
-        // Aquí la lógica para manejar el inicio de sesión
-        // login(email, password);
-        console.log("Datos login:", email, password);
-        router.push("/(tabs)/one");
+    const handleLoginPress = async () => {
+        setLoading(true);
+        try {
+            const userData = await login(email, password);
+            console.log("Datos del usuario logueado:", userData);
+
+            // Guarda los datos del usuario si es necesario
+            // Puedes usar AsyncStorage o un contexto global
+
+            // Navega a la siguiente pantalla
+            router.push("/(tabs)/one");
+        } catch (error) {
+            // console.error("Error en el login:", error);
+            Alert.alert("Error", "Correo o contraseña incorrectos");
+        } finally {
+            setLoading(false);
+        }
     };
+
+    // const handleLoginPress = () => {
+    //     // Aquí la lógica para manejar el inicio de sesión
+    //     // login(email, password);
+    //     console.log("Datos login:", email, password);
+    //     router.push("/(tabs)/one");
+    // };
 
     return (
         <KeyboardAvoidingView

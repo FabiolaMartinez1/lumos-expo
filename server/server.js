@@ -159,6 +159,42 @@ app.get("/api/environmental-data/last/:user_id", (req, res) => {
     });
 });
 
+// Endpoint de login
+app.post("/login", (req, res) => {
+    const { email, password } = req.body;
+
+    // Verificar que email y password se hayan enviado
+    if (!email || !password) {
+        return res.status(400).json({ error: "Email and password are required." });
+    }
+
+    // Buscar el usuario por email y verificar contraseña
+    const query = "SELECT * FROM User WHERE email = ? AND password = ?";
+    db.query(query, [email, password], (err, results) => {
+    if (err) {
+        console.error("Error querying the database:", err);
+        return res.status(500).json({ error: "Error querying the database." });
+    }
+
+      // Verificar si el usuario existe
+    if (results.length === 0) {
+        return res.status(401).json({ error: "Invalid email or password." });
+    }
+
+    const user = results[0];  
+      // Retornar éxito
+    return res.json({
+        message: "Login successful.",
+        user: {
+            user_id: user.user_id,
+            username: user.username,
+            email: user.email,
+            ip_address: user.ip_address,
+            mac_address: user.mac_address,
+            },
+        });
+    });
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

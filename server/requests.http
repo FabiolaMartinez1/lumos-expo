@@ -19,3 +19,13 @@ Accept: application/json
 ### Test Energy Consumption Error Endpoint
 GET http://192.168.31.190:5000/energy-consumption-error?user_id=1
 Accept: application/json
+
+
+###
+POST http://192.168.31.190:5000/login
+Content-Type: application/json
+
+{
+    "email": "john@example.com",
+    "password": "hashed_password1"
+}
